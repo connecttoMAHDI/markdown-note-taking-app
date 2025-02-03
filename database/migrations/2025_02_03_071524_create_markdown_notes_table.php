@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('markdown_notes', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('title')->unique();
             $table->text('content');
             $table->timestamps();
         });

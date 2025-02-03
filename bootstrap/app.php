@@ -1,13 +1,13 @@
 <?php
 
-use App\Traits\HttpResponses;
-use Illuminate\Foundation\Application;
-use Illuminate\Database\QueryException;
 use App\Http\Middleware\AcceptJsonMiddleware;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use App\Traits\HttpResponses;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
