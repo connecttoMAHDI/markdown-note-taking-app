@@ -7,36 +7,55 @@ This is a simple **Markdown Note-Taking App** built with Laravel. It allows user
 ## Features
 
 - **Markdown File Handling:** Users can write and save notes in markdown format.
-- **Grammar Checking:** Automatically checks grammar using an API before saving notes.
+- **Grammar Checking:** Extract plain text from markdown and check for grammar errors using LanguageTool API.
 - **Markdown Rendering:** Converts markdown into HTML for better readability.
 - **RESTful API:** Exposes endpoints to manage notes.
-- **File Upload Support:** Users can upload markdown (`.md`) files.
 
 ## Routes
 
 ### **1. Check Grammar in Markdown**
 
-- **Endpoint:** `POST /notes/check_grammar`
+- **Endpoint:** `POST /api/v1/notes/check-grammar`
 - **Description:** Accepts markdown text, extracts plain text, and checks grammar.
 - **Request Example:**
   ```json
-  { "content": "This is a gramatical mistake." }
+  { "markdown": "This is a gramatical mistake." }
   ```
 - **Response Example:**
   ```json
   {
-    "original": "This is a gramatical mistake.",
-    "corrected": "This is a grammatical mistake.",
-    "suggestions": [
-      { "error": "gramatical", "suggestion": "grammatical" }
-    ]
+    "message": "Grammar check completed.",
+    "data": {
+        "original": "This is a gramatical mistake.\n",
+        "errors": [
+            {
+                "message": "Spelling mistake",
+                "original": "This is a gramatical mistake.",
+                "corrected": "This is a grammatical mistake.",
+                "subject": "gramatical",
+                "offset": 10,
+                "length": 10,
+                "suggestions": [
+                    "grammatical",
+                    "dramatical"
+                ]
+            }
+        ],
+        "warnings": {
+            "incompleteResults": false
+        },
+        "corrected": "This is a grammatical mistake.\n"
+    },
+    "meta": {
+        "language": "English (US)"
+    }
   }
   ```
 
 ### **2. Save a Markdown Note**
 
-- **Endpoint:** `POST /notes`
-- **Description:** Saves a markdown note after grammar verification.
+- **Endpoint:** `POST /api/v1/notes`
+- **Description:** Saves a markdown note.
 - **Request Example:**
   ```json
   {
@@ -47,26 +66,18 @@ This is a simple **Markdown Note-Taking App** built with Laravel. It allows user
 
 ### **3. List All Notes**
 
-- **Endpoint:** `GET /notes`
-- **Description:** Retrieves all saved markdown notes.
+- **Endpoint:** `GET /api/v1/notes`
+- **Description:** Retrieves all saved markdown notes. (raw markdown)
 
-### **4. Get a Note in Markdown Format**
+### **4. Get a single Note**
 
-- **Endpoint:** `GET /notes/{id}`
-- **Description:** Fetches a specific markdown note.
+- **Endpoint:** `GET /api/v1/notes/{id}`
+- **Description:** Fetches a specific markdown note. (raw markdown)
 
 ### **5. Render Markdown to HTML**
 
-- **Endpoint:** `GET /notes/{id}/render`
+- **Endpoint:** `GET /api/v1/notes/{id}/render`
 - **Description:** Converts markdown content to HTML.
-- **Response Example:**
-  ```json
-  {
-    "id": 1,
-    "title": "My First Note",
-    "html": "<h1>Heading</h1><p>This is a sample markdown note.</p>"
-  }
-  ```
 
 ## Installation
 

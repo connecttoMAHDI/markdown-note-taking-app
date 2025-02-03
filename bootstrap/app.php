@@ -70,7 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (Exception $e, $request) use ($httpResponses) {
             return $httpResponses->failureResponse(
                 msg: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
+                statusCode: $e->getCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR
             );
         });
     })->create();

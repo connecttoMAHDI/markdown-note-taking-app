@@ -38,11 +38,7 @@ class MarkdownNoteController extends Controller
     public function store(Request $request)
     {
         // Check if the request is JSON
-        if (! $request->isJson()) {
-            return $this->failureResponse(
-                'Invalid Content-Type. Please use application/json.'
-            );
-        }
+        $this->ensureBodyIsJson($request);
 
         // Validate the payload
         $payload = $request->validate([
@@ -54,7 +50,7 @@ class MarkdownNoteController extends Controller
         $note = MarkdownNote::create($payload);
 
         // Save the markdown file into storage (storage/app/markdown/)
-        $filePath = 'markdown/' . $note->title . '.md';
+        $filePath = 'markdown/'.$note->title.'.md';
         Storage::put($filePath, $note->content);
 
         return $this->successResponse(
@@ -89,7 +85,7 @@ class MarkdownNoteController extends Controller
     public function render(MarkdownNote $note)
     {
         // Locate the .md file in storage
-        $filePath = 'markdown/' . $note->title . '.md';
+        $filePath = 'markdown/'.$note->title.'.md';
 
         if (! Storage::exists($filePath)) {
             return $this->failureResponse(
@@ -121,11 +117,7 @@ class MarkdownNoteController extends Controller
     public function grammar_check(Request $request)
     {
         // Check if the request is JSON
-        if (! $request->isJson()) {
-            return $this->failureResponse(
-                'Invalid Content-Type. Please use application/json.'
-            );
-        }
+        $this->ensureBodyIsJson($request);
 
         // Validate the content
         $payload = $request->validate([
@@ -153,6 +145,9 @@ class MarkdownNoteController extends Controller
             'warnings' => [],
         ];
 
+        $originalSntnc = $plainText;
+        $correctedSntnc = $plainText;
+
         // Process each match/error
         if (! empty($grammarCheckResult['matches'])) {
             foreach ($grammarCheckResult['matches'] as $match) {
@@ -160,18 +155,21 @@ class MarkdownNoteController extends Controller
                 $matchSntnce = $match['sentence'];
                 $matchOffset = $match['offset'];
                 $matchLength = $match['length'];
-                $subj = substr($matchSntnce, $matchOffset, $matchLength);
+                $subject = substr($matchSntnce, $matchOffset, $matchLength);
                 $suggestions = array_map(
                     function ($replacement) {
                         return $replacement['value'];
                     },
                     $match['replacements'] ?? []
                 );
+
+                $correctedSntnc = str_replace($subject, $suggestions[0] ?? $subject, $correctedSntnc);
+
                 $userFriendlyResult['errors'][] = [
-                    'message' =>  $matchMsg ?? 'Error detected',
+                    'message' => $matchMsg ?? 'Error detected',
                     'original' => $matchSntnce ?? '',
-                    'modified' => str_replace($subj, $suggestions[0], $matchSntnce),
-                    'subject' => $subj,
+                    'corrected' => str_replace($subject, $suggestions[0], $matchSntnce),
+                    'subject' => $subject,
                     'offset' => $matchOffset ?? 0,
                     'length' => $matchLength ?? 0,
                     'suggestions' => $suggestions,
@@ -185,11 +183,25 @@ class MarkdownNoteController extends Controller
         }
 
         return $this->successResponse(
-            'Grammar check completed.',
-            $userFriendlyResult,
+            msg: 'Grammar check completed.',
+            data: [
+                'original' => $originalSntnc,
+                ...$userFriendlyResult,
+                'corrected' => $correctedSntnc,
+            ],
             meta: [
                 'language' => $grammarCheckResult['language']['name'] ?? 'Unknown',
             ]
         );
+    }
+
+    private function ensureBodyIsJson(Request $request)
+    {
+        if (! $request->isJson()) {
+            throw new \Exception(
+                'Invalid Content-Type. Please use application/json.',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
     }
 }
