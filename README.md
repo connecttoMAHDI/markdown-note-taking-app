@@ -73,15 +73,14 @@ This is a simple **Markdown Note-Taking App** built with Laravel. It allows user
 ### **1. Clone the Repository**
 
 ```sh
- git clone https://github.com/your-repo/markdown-note-app.git
- cd markdown-note-app
+ git clone https://github.com/connecttoMAHDI/markdown-note-taking-app.git
+ cd markdown-note-taking-app
 ```
 
 ### **2. Install Dependencies**
 
 ```sh
  composer install
- npm install  # If using frontend assets
 ```
 
 ### **3. Set Up Environment Variables**
@@ -104,7 +103,13 @@ Then, generate an application key:
  php artisan migrate
 ```
 
-### **5. Run the Application**
+### **5. Insert some test data (optional)**
+
+```sh
+ php artisan db:seed
+```
+
+### **6. Run the Application**
 
 ```sh
  php artisan serve
