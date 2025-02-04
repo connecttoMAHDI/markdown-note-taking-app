@@ -126,4 +126,13 @@ Then, generate an application key:
  php artisan serve
 ```
 
-The API will be available at `http://127.0.0.1:8000`.
+## API Testing
+
+A Postman-compatible collection file, `markdown-note-taking-app.json`, is available in the project root. You can import it into Postman or Talend API Tester for easy testing of API endpoints.
+
+### Steps to Import:
+
+1. Open Postman or Talend API Tester.
+2. Click on `Import`.
+3. Select `markdown-note-taking-app.json` from the project root.
+4. Start testing the API endpoints.
